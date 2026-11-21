@@ -8,7 +8,8 @@ const games = {
   "iq_test": "IQ Test",
   "spend-ambani": "Spend Ambani Money",
   "runner": "REDCORE Runner",
-  "rhythm": "Neon Rhythm 3D"
+  "rhythm": "Neon Rhythm 3D",
+  "SHOOTER": "SHOOTER"
 };
 const gameId = location.pathname.split("/").pop().replace(/\.html?$/i, "");
 const title = games[gameId];
