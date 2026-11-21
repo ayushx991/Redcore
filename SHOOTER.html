@@ -31,11 +31,6 @@ button:active{transform:scale(.97)}button.primary{background:linear-gradient(135
 #passwordError{min-height:22px;margin:0 0 10px!important;color:#ff8ebd!important;font-size:13px}
 #passwordGate .actions button{min-width:150px}
 
-#loginGate{position:fixed;z-index:30;inset:0;display:none;place-items:center;padding:20px;background:radial-gradient(ellipse at 50% 35%,#20365de8,#070c18f7 72%);backdrop-filter:blur(18px)}
-#loginGate .panel{width:min(430px,92vw)}
-#loginGate .google-mark{width:54px;height:54px;margin:0 auto 16px;border:1px solid #78dcff88;border-radius:17px;display:grid;place-items:center;color:#8ce7ff;font-size:25px;box-shadow:0 0 28px #48caff24}
-#loginGate .actions button{min-width:190px}
-#loginStatus{min-height:22px;margin:0 0 12px!important;color:#ff9fc5!important;font-size:13px}
 </style>
 </head>
 <body>
@@ -57,62 +52,6 @@ button:active{transform:scale(.97)}button.primary{background:linear-gradient(135
   </div>
 </div>
 
-<div id="loginGate" role="dialog" aria-modal="true" aria-labelledby="loginTitle">
-  <div class="panel">
-    <div class="google-mark" aria-hidden="true">G</div>
-    <h1 id="loginTitle">SIGN IN TO SAVE YOUR HISTORY</h1>
-    <p id="loginDescription">Sign in with Google to save your SHOOTER plays and progress. You can also continue without signing in.</p>
-    <p id="loginStatus" aria-live="polite"></p>
-    <div class="actions"><button class="primary" id="googleLogin" type="button">CONTINUE WITH GOOGLE</button><button id="loginLater" type="button">LOGIN LATER</button></div>
-  </div>
-</div>
-
-<script type="module">
-import { auth, onAuthStateChanged, signInWithGoogle, firebaseReady } from "./auth.js";
-const loginGate = document.getElementById("loginGate");
-const loginStatus = document.getElementById("loginStatus");
-const googleLogin = document.getElementById("googleLogin");
-const loginLater = document.getElementById("loginLater");
-let shooterUser = null;
-let passwordUnlocked = false;
-onAuthStateChanged(auth, (user) => {
-  shooterUser = user;
-  if (user) {
-    loginStatus.textContent = "Signed in as " + (user.displayName || user.email || "Google account");
-    googleLogin.textContent = "SIGNED IN";
-    googleLogin.disabled = true;
-    if (passwordUnlocked) loginGate.style.display = "none";
-  } else {
-    googleLogin.textContent = "CONTINUE WITH GOOGLE";
-    googleLogin.disabled = false;
-    if (passwordUnlocked) loginGate.style.display = "grid";
-  }
-});
-loginLater.addEventListener("click", () => {
-  loginGate.style.display = "none";
-});
-googleLogin.addEventListener("click", async () => {
-  googleLogin.disabled = true;
-  loginStatus.textContent = "Connecting to Google…";
-  try {
-    if (!firebaseReady) throw new Error("Firebase is not configured. Please contact the site owner.");
-    const result = await signInWithGoogle();
-    if (result?.user) {
-      shooterUser = result.user;
-      loginGate.style.display = "none";
-    }
-  } catch (error) {
-    loginStatus.textContent = error?.message || "Google sign-in failed. Please try again.";
-    googleLogin.disabled = false;
-  }
-});
-window.addEventListener("redcore-shooter-password-unlocked", () => {
-  passwordUnlocked = true;
-  if (shooterUser) loginGate.style.display = "none";
-  else loginGate.style.display = "grid";
-});
-window.redcoreShooterIsSignedIn = () => !!shooterUser;
-</script>
 <script>
 (()=>{
 const $=id=>document.getElementById(id);
@@ -123,7 +62,6 @@ $('passwordForm').addEventListener('submit',e=>{
   if(passwordInput.value==='8900'){
     gate.style.display='none';
     passwordError.textContent='';
-    window.dispatchEvent(new Event('redcore-shooter-password-unlocked'));
   }else{
     passwordError.textContent='Incorrect password. Try again.';
     passwordInput.value='';
@@ -280,7 +218,7 @@ function draw(t){
 }
 function frame(now){const dt=Math.min(2,(now-last)/16.67||1);last=now;update(dt);draw(now);requestAnimationFrame(frame);}
 requestAnimationFrame(frame);
-function start(){if(!window.redcoreShooterIsSignedIn?.()){ $('overlay').style.display='none'; $('loginGate').style.display='grid'; return; }score=0;round=1;target=null;shots=[];particles=[];spawnTimer=.25;paused=false;running=true;gameOver=false;$('score').textContent='0';$('round').textContent='1';$('overlay').style.display='none';$('pause').textContent='Ⅱ';}
+function start(){score=0;round=1;target=null;shots=[];particles=[];spawnTimer=.25;paused=false;running=true;gameOver=false;$('score').textContent='0';$('round').textContent='1';$('overlay').style.display='none';$('pause').textContent='Ⅱ';}
 $('start').addEventListener('click',start);
 $('pause').addEventListener('click',()=>{if(!running)return;paused=!paused;$('pause').textContent=paused?'▶':'Ⅱ';});
 $('exit').addEventListener('click',()=>{running=false;paused=false;$('overlay').style.display='grid';$('overlay').querySelector('h1').textContent='GAME PAUSED';$('overlay').querySelector('p').textContent='Your run has ended. Start again whenever you are ready.';$('start').textContent='PLAY AGAIN';});
