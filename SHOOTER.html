@@ -68,13 +68,13 @@ button:active{transform:scale(.97)}button.primary{background:linear-gradient(135
 </div>
 
 <script type="module">
-import { onAuthStateChanged, signInWithGoogle, firebaseReady } from "./auth.js";
+import { auth, onAuthStateChanged, signInWithGoogle, firebaseReady } from "./auth.js";
 const loginGate = document.getElementById("loginGate");
 const loginStatus = document.getElementById("loginStatus");
 const googleLogin = document.getElementById("googleLogin");
 let shooterUser = null;
 let passwordUnlocked = false;
-onAuthStateChanged((user) => {
+onAuthStateChanged(auth, (user) => {
   shooterUser = user;
   if (user) {
     loginStatus.textContent = "Signed in as " + (user.displayName || user.email || "Google account");
