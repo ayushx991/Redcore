@@ -60,10 +60,10 @@ button:active{transform:scale(.97)}button.primary{background:linear-gradient(135
 <div id="loginGate" role="dialog" aria-modal="true" aria-labelledby="loginTitle">
   <div class="panel">
     <div class="google-mark" aria-hidden="true">G</div>
-    <h1 id="loginTitle">SIGN IN TO PLAY</h1>
-    <p id="loginDescription">Sign in with your Google account to unlock REDCORE SHOOTER. Your game will start only after successful sign-in.</p>
+    <h1 id="loginTitle">SIGN IN TO SAVE YOUR HISTORY</h1>
+    <p id="loginDescription">Sign in with Google to save your SHOOTER plays and progress. You can also continue without signing in.</p>
     <p id="loginStatus" aria-live="polite"></p>
-    <div class="actions"><button class="primary" id="googleLogin" type="button">CONTINUE WITH GOOGLE</button></div>
+    <div class="actions"><button class="primary" id="googleLogin" type="button">CONTINUE WITH GOOGLE</button><button id="loginLater" type="button">LOGIN LATER</button></div>
   </div>
 </div>
 
@@ -72,6 +72,7 @@ import { auth, onAuthStateChanged, signInWithGoogle, firebaseReady } from "./aut
 const loginGate = document.getElementById("loginGate");
 const loginStatus = document.getElementById("loginStatus");
 const googleLogin = document.getElementById("googleLogin");
+const loginLater = document.getElementById("loginLater");
 let shooterUser = null;
 let passwordUnlocked = false;
 onAuthStateChanged(auth, (user) => {
@@ -86,6 +87,9 @@ onAuthStateChanged(auth, (user) => {
     googleLogin.disabled = false;
     if (passwordUnlocked) loginGate.style.display = "grid";
   }
+});
+loginLater.addEventListener("click", () => {
+  loginGate.style.display = "none";
 });
 googleLogin.addEventListener("click", async () => {
   googleLogin.disabled = true;
